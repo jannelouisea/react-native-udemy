@@ -1,3 +1,7 @@
+// Whenever you want to use JSX in a file
+// you have to import React
+import React from 'react';
+
 // Navigation
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -20,4 +24,9 @@ const navigator = createStackNavigator(
   }
 );
 
-export default createAppContainer(navigator);
+const App = createAppContainer(navigator);
+
+// Custom component
+export default () => {
+  return <App />;
+};
