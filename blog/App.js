@@ -9,6 +9,9 @@ import { createStackNavigator } from 'react-navigation-stack';
 // Screens
 import IndexScreen from './src/screens/IndexScreen';
 
+// Providers
+import { BlogProvider } from './src/context/BlogContext';
+
 const navigator = createStackNavigator(
   {
     // Route configuration object
@@ -28,5 +31,10 @@ const App = createAppContainer(navigator);
 
 // Custom component
 export default () => {
-  return <App />;
+  // So in the context of BlogProvider... <App /> is what {children} will be
+  return (
+    <BlogProvider>
+      <App />
+    </BlogProvider>
+  );
 };
