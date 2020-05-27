@@ -1,33 +1,30 @@
-import React, { useState } from 'react';
+import createDataContext from './createDataContext';
 
-// Think of this object as a tunnel/pipe
-// Responsible to passing data to other components
-const BlogContext = React.createContext();
-
-// What is {children}?
-// More or less other components that are being passed
-
-// Also notice that we're not doing
-// 'export const default'
-// We are using what is called a Named Export
-export const BlogProvider = ({ children }) => {
-  const [blogPosts, setBlogPosts] = useState([]);
-
-  // Because the BlogProvider is showing every other component, the entire application will be rerendered
-  const addBlogPost = () => {
-    setBlogPosts([
-      ...blogPosts,
-      { title: `Blog Post #${blogPosts.length + 1}` },
-    ]);
-  };
-
-  // What will be passed to the components that call the BlogContext
-  const value = {
-    data: blogPosts,
-    addBlogPost: addBlogPost,
-  };
-
-  return <BlogContext.Provider value={value}>{children}</BlogContext.Provider>;
+const blogPostActions = {
+  CREATE: 'create',
+  REMOVE: 'remove',
+  UPDATE: 'update',
+  DELETE: 'delete',
 };
 
-export default BlogContext;
+const blogReducer = (state, action) => {
+  switch (action.type) {
+    case blogPostActions.CREATE:
+      return [...state, { title: `Blog Post #${state.length + 1}` }];
+    default:
+      console.log('Just returning the regular state');
+      return state;
+  }
+};
+
+const addBlogPost = (dispatch) => {
+  return () => {
+    dispatch({ type: blogPostActions.CREATE });
+  };
+};
+
+export const { Context, Provider } = createDataContext(
+  blogReducer,
+  { addBlogPost },
+  []
+);
