@@ -8,6 +8,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 // Screens
 import IndexScreen from './src/screens/IndexScreen';
+import ShowScreen from './src/screens/ShowScreen';
 
 // Providers
 import { Provider as BlogProvider } from './src/context/BlogContext';
@@ -17,6 +18,7 @@ const navigator = createStackNavigator(
     // Route configuration object
     // This lists out all the possible screens a user can navigate to
     Index: IndexScreen,
+    Show: ShowScreen,
   },
   {
     // Configurations options specifically for the stack navigator
