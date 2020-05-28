@@ -9,10 +9,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Context as BlogContext } from '../context/BlogContext';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Feather } from '@expo/vector-icons';
 
 const IndexScreen = ({ navigation }) => {
-  const { data, addBlogPost, deleteBlogPost } = useContext(BlogContext);
+  const { data, deleteBlogPost } = useContext(BlogContext);
 
   // NOTE!! On the TouchableOpacity for the trash button... The call to the delete function
   // must be wrapped by an anonymous function. Otherwise it will be executed as soon as the item
@@ -21,7 +21,6 @@ const IndexScreen = ({ navigation }) => {
   // onPress={addBlogPost} is the same as onPress={() => addBlogPost()}
   return (
     <View>
-      <Button title="Add Post" onPress={addBlogPost} />
       <FlatList
         data={data}
         keyExtractor={(blogPost) => blogPost.title}
@@ -42,6 +41,19 @@ const IndexScreen = ({ navigation }) => {
       />
     </View>
   );
+};
+
+// This object is useful if we want to add customiation to the header on a screen
+// This function receives the same props passed into out screen component
+IndexScreen.navigationOptions = ({ navigation }) => {
+  return {
+    // Directly assigning it to some JSX is deprecated
+    headerRight: () => (
+      <TouchableOpacity onPress={() => navigation.navigate('Create')}>
+        <Feather name="plus" size={30} />
+      </TouchableOpacity>
+    ),
+  };
 };
 
 const styles = StyleSheet.create({
