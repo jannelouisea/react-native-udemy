@@ -21,6 +21,10 @@ const blogReducer = (state, action) => {
     case blogPostActions.DELETE:
       // Returns a new list containing only the elements that cause the condition to be true
       return state.filter((blogPost) => blogPost.id !== action.payload);
+    case blogPostActions.UPDATE:
+      return state.map((blogPost) => {
+        return blogPost.id === action.payload.id ? action.payload : blogPost;
+      });
     default:
       return state;
   }
@@ -29,7 +33,9 @@ const blogReducer = (state, action) => {
 const addBlogPost = (dispatch) => {
   return (title, content, redirect) => {
     dispatch({ type: blogPostActions.CREATE, payload: { title, content } });
-    redirect();
+    if (redirect) {
+      redirect();
+    } // Just making sure that this function exists before calling it
   };
 };
 
@@ -39,8 +45,24 @@ const deleteBlogPost = (dispatch) => {
   };
 };
 
+const editBlogPost = (dispatch) => {
+  return (id, title, content, redirect) => {
+    dispatch({
+      type: blogPostActions.UPDATE,
+      payload: { id, title, content },
+    });
+    if (redirect) {
+      redirect();
+    } // Just making sure that this function exists before calling it
+  };
+};
+
+const defaultBlogPosts = [
+  { id: 1, title: 'My first blog', content: 'I ate a sandwich today.' },
+];
+
 export const { Context, Provider } = createDataContext(
   blogReducer,
-  { addBlogPost, deleteBlogPost },
-  []
+  { addBlogPost, deleteBlogPost, editBlogPost },
+  defaultBlogPosts
 );
