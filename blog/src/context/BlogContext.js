@@ -1,28 +1,22 @@
 import createDataContext from './createDataContext';
+import jsonServer from '../api/jsonServer';
 
 const blogPostActions = {
-  CREATE: 'create',
-  REMOVE: 'remove',
   UPDATE: 'update',
   DELETE: 'delete',
+  RECEIVE: 'receive',
 };
 
 const blogReducer = (state, action) => {
   switch (action.type) {
-    case blogPostActions.CREATE:
-      return [
-        ...state,
-        {
-          id: Math.floor(Math.random() * 99999),
-          title: action.payload.title,
-          content: action.payload.content,
-        },
-      ];
+    case blogPostActions.RECEIVE:
+      return action.payload;
     case blogPostActions.DELETE:
       // Returns a new list containing only the elements that cause the condition to be true
       return state.filter((blogPost) => blogPost.id !== action.payload);
     case blogPostActions.UPDATE:
       return state.map((blogPost) => {
+        ``;
         return blogPost.id === action.payload.id ? action.payload : blogPost;
       });
     default:
@@ -30,9 +24,18 @@ const blogReducer = (state, action) => {
   }
 };
 
+const getBlogPosts = (dispatch) => {
+  return async () => {
+    const response = await jsonServer.get('/blogPosts');
+    // response.data === []
+    dispatch({ type: blogPostActions.RECEIVE, payload: response.data });
+  };
+};
+
 const addBlogPost = (dispatch) => {
-  return (title, content, redirect) => {
-    dispatch({ type: blogPostActions.CREATE, payload: { title, content } });
+  return async (title, content, redirect) => {
+    await jsonServer.post('/blogposts', { title, content });
+
     if (redirect) {
       redirect();
     } // Just making sure that this function exists before calling it
@@ -40,29 +43,34 @@ const addBlogPost = (dispatch) => {
 };
 
 const deleteBlogPost = (dispatch) => {
-  return (id) => {
+  return async (id) => {
+    await jsonServer.delete(`/blogPosts/${id}`);
     dispatch({ type: blogPostActions.DELETE, payload: id });
   };
 };
 
 const editBlogPost = (dispatch) => {
-  return (id, title, content, redirect) => {
+  return async (id, title, content, redirect) => {
+    await jsonServer.put(`/blogPosts/${id}`, { title, content });
+
     dispatch({
       type: blogPostActions.UPDATE,
       payload: { id, title, content },
     });
+
     if (redirect) {
       redirect();
     } // Just making sure that this function exists before calling it
   };
 };
 
-const defaultBlogPosts = [
-  { id: 1, title: 'My first blog', content: 'I ate a sandwich today.' },
-];
-
 export const { Context, Provider } = createDataContext(
   blogReducer,
-  { addBlogPost, deleteBlogPost, editBlogPost },
-  defaultBlogPosts
+  {
+    getBlogPosts,
+    addBlogPost,
+    deleteBlogPost,
+    editBlogPost,
+  },
+  []
 );
